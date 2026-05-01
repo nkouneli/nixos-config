@@ -1,5 +1,7 @@
 {
    description = "my super cool nixos !!!!!";
+   inputs.nixos-hardware.url = "github:NixOS/nixos-hardware/master";
+
    inputs = {
       nixpkgs.url = "nixpkgs/nixos-25.11";
       home-manager = {
@@ -8,11 +10,12 @@
       };
    };
 
-   outputs = { self, nixpkgs, home-manager, ... }: {
+   outputs = { self, nixpkgs, home-manager, nixos-hardware, ... }: {
       nixosConfigurations.nixos-btw = nixpkgs.lib.nixosSystem {   
       system = "x86_64-linux";
 	    modules = [
         ./configuration.nix
+        nixos-hardware.nixosModules.lenovo-thinkpad-x280
 	    home-manager.nixosModules.home-manager
 	    {
 		     home-manager = {

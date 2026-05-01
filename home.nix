@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ config, lib, pkgs, ... }:
 let
    dotfiles = "${config.home.homeDirectory}/nixos-dotfiles/config";
    create_symlink = path: config.lib.file.mkOutOfStoreSymlink path;
@@ -6,11 +6,18 @@ let
       qtile = "qtile";
       nvim = "nvim";
    };
+   shellAliases = {
+      v = "nvim";
+      vdiff = "nvim -d";
+      bnuuy = "echo bnuuuyyyy!!!!!";
+   };
 in
 {
    home.username = "nyx";
    home.homeDirectory = "/home/nyx";
    home.stateVersion = "25.11";
+   
+   home.shellAliases = shellAliases;
    
    xdg.configFile = builtins.mapAttrs 
      (name: subpath: {
@@ -20,20 +27,46 @@ in
      configs;
 
    home.packages = with pkgs; [
-      neovim
       ripgrep
       nil
       nixpkgs-fmt
       nodejs
       gcc
       discord
+      spotify
+      krita
+      aseprite
    ];
 
    programs.git.enable = true;
    programs.bash = {
       enable = true;
-      shellAliases = {
-         bnuuy = "echo bnuuuyyy !!!!!!!";
-      };
+      shellAliases = shellAliases;
    };
+   programs.neovim = {
+      enable = true;
+      package = pkgs.neovim-unwrapped;
+
+      defaultEditor = true;
+      viAlias = true;
+      vimAlias = true;
+
+      extraWrapperArgs = with pkgs; [
+        "--suffix"
+        "LIBRARY_PATH"
+        ":"
+        "${lib.makeLibraryPath [
+          stdenv.cc.cc
+          zlib
+        ]}"
+
+        "--suffix"
+        "PKG_CONFIG_PATH"
+        ":"
+        "${lib.makeSearchPathOutput "dev" "lib/pkgconfig" [
+          stdenv.cc.cc
+          zlib
+        ]}"
+      ];
+    };
 }
