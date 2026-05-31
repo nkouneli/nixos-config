@@ -15,7 +15,7 @@ in
 {
    home.username = "nyx";
    home.homeDirectory = "/home/nyx";
-   home.stateVersion = "25.11";
+   home.stateVersion = "26.05";
    
    home.shellAliases = shellAliases;
    
@@ -44,6 +44,7 @@ in
    programs.neovim = {
       enable = true;
       package = pkgs.neovim-unwrapped;
+      sideloadInitLua = true;
 
       defaultEditor = true;
       viAlias = true;
