@@ -5,18 +5,10 @@
     [ 
       ./hardware-configuration.nix
     ];
-  nixpkgs.config.permittedInsecurePackages = [
-     "dotnet-runtime-6.0.36"
-  ];
 
-  boot.loader.systemd-boot.enable = true;
-  boot.loader.efi.canTouchEfiVariables = true;
-  boot.extraModprobeConfig = ''
-    options snd-hda-intel model=dell-headset-multi
-  '';
-
-  environment.sessionVariables = {
-     DOTNET_ROLL_FORWARD_ON_NO_CANDIDATE_FX=2;
+  boot.loader = {
+     systemd-boot.enable = true;
+     efi.canTouchEfiVariables = true;
   };
 
   hardware.graphics = {
@@ -37,8 +29,30 @@
      autoRepeatInterval = 35;
 
      wacom.enable = true;
+     digimend.enable = true;
+     inputClassSections = [
+      ''
+        Identifier "Wacom One by Wacom S Pen"
+        MatchUSBID "0x56a:0x37a"
+        MatchDevicePath "/dev/input/event*"
+        MatchIsTablet "on"
+        Driver "wacom"
+      ''
+     ];
+
      windowManager.qtile.enable = true;
   };
+  services.udev.enable = true;
+
+  services.udev.extraHwdb =''
+    evdev:input:b0x03v0x56ap0x37a*
+      KEYBOARD_KEY_0=z
+      KEYBOARD_KEY_70005=h
+      KEYBOARD_KEY_700e0=0x1d
+      KEYBOARD_KEY_70057=a
+      KEYBOARD_KEY_70056=z
+  '';
+
   services.displayManager.ly.enable = true;
   services.blueman.enable = true;
 
@@ -49,11 +63,6 @@
 
   services.thermald.enable = true;
   services.tlp.enable = true;
-
-  services.mysql = {
-    enable = true;
-    package = pkgs.mysql-workbench;
-   };
 
   security.rtkit.enable = true;
   services.pipewire = {
@@ -68,7 +77,7 @@
 
   users.users.nyx = {
     isNormalUser = true;
-    extraGroups = [ "wheel" "video" "libvirtd" ];
+    extraGroups = [ "wheel" "video" ];
     packages = with pkgs; [
       tree
     ];
@@ -86,34 +95,33 @@
      ];
   };
   programs.gamemode.enable = true;
+  programs.cdemu.enable = true;
+  programs.cdemu.gui = true;
 
-  programs.virt-manager.enable = true;
-  virtualisation.libvirtd = {
-    enable = true;
-    qemu = {
-      package = pkgs.qemu_kvm;
-      runAsRoot = true;
-      swtpm.enable = true;
-    };
-  };
+  programs.nix-ld.enable = true;
+  programs.nix-ld.libraries = with pkgs; [
+    xorg.libICE
+    xorg.libSM
+    xorg.libX11
+    xorg.libXi
+    xorg.libXcursor
+    xorg.libXrandr
+    libGL
+    fontconfig
+    freetype
+  ];
 
   nixpkgs.config.allowUnfree = true;
   environment.systemPackages = with pkgs; [
     alacritty
-    easyeffects
-    dotnet-sdk
-    dotnet-runtime_6
     git
     protonup-qt
     pcmanfm
     pwvucontrol
-    vim 
     wget
     xclip
     maim
     xev
-    kdePackages.wacomtablet
-    libwacom
     zip
     unzip
     usbutils
@@ -121,16 +129,25 @@
     udisks
     image-roll
     btop
-    alsa-utils
-    libvirt
-    alsa-tools
-    pavucontrol
-    pulseaudio
-    steam-run
-    appimage-run
+    steam-run-free
     baobab
     wineWow64Packages.stable
     lutris
+    rofi
+    picom
+    rar
+    unrar
+    ripgrep
+    nil
+    nixpkgs-fmt
+    gcc
+    nodejs
+    alsa-utils
+    libwacom
+    kdePackages.wacomtablet
+    config.boot.kernelPackages.digimend
+    evemu
+    evtest
   ];
 
   fonts = {
@@ -139,6 +156,7 @@
 
      packages = with pkgs; [
         nerd-fonts.jetbrains-mono
+        comic-mono
      ];
 
      fontconfig = {

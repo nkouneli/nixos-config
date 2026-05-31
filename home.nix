@@ -27,15 +27,13 @@ in
      configs;
 
    home.packages = with pkgs; [
-      ripgrep
-      nil
-      nixpkgs-fmt
-      nodejs
-      gcc
       discord
       spotify
       krita
       aseprite
+      vscode-fhs
+      godot
+      obs-studio
    ];
 
    programs.git.enable = true;
@@ -50,6 +48,10 @@ in
       defaultEditor = true;
       viAlias = true;
       vimAlias = true;
+
+      plugins = [
+        pkgs.vimPlugins.nvim-treesitter.withAllGrammars
+      ];
 
       extraWrapperArgs = with pkgs; [
         "--suffix"
