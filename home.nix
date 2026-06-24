@@ -37,7 +37,7 @@ in
    ];
 
    programs.git.enable = true;
-   programs.bash = {
+      programs.bash = {
       enable = true;
       shellAliases = shellAliases;
    };

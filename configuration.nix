@@ -90,6 +90,11 @@
       pulse.enable = true;
       jack.enable = true;
     };
+
+    "06cb-009a-fingerprint-sensor" = {
+      enable = true;
+      backend = "python-validity";
+    };
   };
 
   security.rtkit.enable = true;
@@ -130,6 +135,7 @@
   nixpkgs.config.allowUnfree = true;
   environment.systemPackages = with pkgs; [
     alacritty
+    brightnessctl
     git
     protonup-qt
     pcmanfm
@@ -164,6 +170,7 @@
     config.boot.kernelPackages.digimend
     evemu
     evtest
+    xinit
   ];
 
   fonts = {
@@ -172,7 +179,8 @@
 
      packages = with pkgs; [
         nerd-fonts.jetbrains-mono
-        comic-mono
+        nerd-fonts.symbols-only
+        nerd-fonts.departure-mono
      ];
 
      fontconfig = {
